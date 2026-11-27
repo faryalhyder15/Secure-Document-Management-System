@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Audit verification{% endblock %}
+{% block content %}
+<h1>Audit-log integrity verification</h1>
+<div class="card {{ 'ok-card' if result.ok else 'bad-card' }}">
+  {% if result.ok %}
+    <h2>✅ Audit log intact</h2>
+    <p>{{ result.checked }} records checked: hash chain unbroken, all HMACs valid, end of log matches the external anchor.</p>
+  {% else %}
+    <h2>❌ TAMPERING DETECTED</h2>
+    <p>{{ result.checked }} records checked. Problems found:</p>
+    <ul>{% for p in result.problems %}<li>{{ p }}</li>{% endfor %}</ul>
+  {% endif %}
+</div>
+<p><a href="{{ url_for('admin.audit_page') }}">← Back to audit log</a></p>
+{% endblock %}

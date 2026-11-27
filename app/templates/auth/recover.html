@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Recover account{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Recover account</h1>
+  <form method="post" autocomplete="off">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label>Username <input name="username" required></label>
+    <label>Recovery code <input name="recovery_code" required placeholder="XXXX-XXXX-..."></label>
+    <label>New password <input name="new_password" type="password" required minlength="10"></label>
+    <button>Reset password</button>
+  </form>
+  <p class="muted small">Without the password or the recovery code your private keys cannot be decrypted —
+    not even by an administrator. That is the price of real confidentiality.</p>
+</div>
+{% endblock %}

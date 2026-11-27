@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Integrity scan{% endblock %}
+{% block content %}
+<h1>Storage integrity scan</h1>
+<div class="card">
+  <p class="muted">Compares the SHA-256 of every encrypted blob with the value recorded when it was written.
+     The administrator learns only <em>OK / MODIFIED / MISSING</em> — never the content.</p>
+  <form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button>Run scan</button></form>
+</div>
+{% if results is not none %}
+<div class="card">
+  <table>
+    <tr><th>Document ID</th><th>Owner</th><th>Status</th></tr>
+    {% for r in results %}<tr class="{{ 'o-failure' if r.status != 'OK' }}"><td class="mono">{{ r.id }}</td><td>{{ r.owner }}</td><td><strong>{{ r.status }}</strong></td></tr>{% endfor %}
+  </table>
+</div>
+{% endif %}
+{% endblock %}

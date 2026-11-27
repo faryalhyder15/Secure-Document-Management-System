@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Account{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Change password</h1>
+  <form method="post" autocomplete="off">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label>Current password <input name="old_password" type="password" required></label>
+    <label>New password <input name="new_password" type="password" required minlength="10"></label>
+    <button>Change password</button>
+  </form>
+  <p class="muted small">Changing your password re-encrypts your private keys, issues a new recovery code
+    and logs out all your other sessions.</p>
+</div>
+{% endblock %}

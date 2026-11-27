@@ -1,0 +1,43 @@
+/* app/static/style.css — all styling lives here (CSP forbids inline styles) */
+:root { --bg:#f4f6f9; --card:#fff; --ink:#1d2433; --muted:#6b7385; --line:#e3e7ee;
+        --brand:#1f4fd1; --ok:#127a3a; --okbg:#e8f6ee; --bad:#b4232a; --badbg:#fdecec; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--ink); }
+.topbar { display:flex; justify-content:space-between; align-items:center; padding:12px 28px; background:#14213d; color:#fff; }
+.topbar a { color:#dfe6ff; text-decoration:none; margin-left:16px; font-size:14px; }
+.topbar .brand { font-weight:700; font-size:18px; margin:0; color:#fff; }
+.topbar nav { display:flex; align-items:center; }
+.who { margin-left:18px; font-size:14px; color:#fff; }
+main { max-width:1100px; margin:24px auto; padding:0 20px; }
+footer { text-align:center; color:var(--muted); font-size:12px; padding:24px; }
+h1 { font-size:24px; margin:8px 0 16px; } h2 { font-size:17px; margin:0 0 12px; } h3 { font-size:15px; margin:18px 0 8px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px; margin-bottom:18px; }
+.narrow { max-width:460px; margin:30px auto; }
+.ok-card { background:var(--okbg); border-color:#9bd3b0; } .ok-card h2 { color:var(--ok); }
+.bad-card { background:var(--badbg); border-color:#f0a9ad; } .bad-card h2 { color:var(--bad); }
+.error-card h1 { color:var(--bad); font-size:40px; margin:0; }
+label { display:block; margin:10px 0; font-size:14px; }
+input, select { width:100%; padding:9px 10px; border:1px solid #cfd5df; border-radius:6px; font-size:14px; margin-top:4px; }
+.row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; } .row input, .row select { width:auto; flex:1; margin:0; }
+.row-between { display:flex; justify-content:space-between; align-items:center; }
+button, .button { display:inline-block; background:var(--brand); color:#fff; border:0; border-radius:6px; padding:9px 16px;
+                  font-size:14px; cursor:pointer; text-decoration:none; margin-top:6px; }
+button.secondary { background:#4b5568; } button.danger { background:var(--bad); }
+button.small { padding:5px 10px; font-size:12px; margin:0 2px; }
+button.link { background:none; color:#dfe6ff; padding:0; margin:0 0 0 16px; font-size:14px; }
+form.inline { display:inline; }
+.actions { margin-top:14px; display:flex; gap:10px; align-items:center; }
+table { width:100%; border-collapse:collapse; font-size:14px; }
+th, td { text-align:left; padding:8px; border-bottom:1px solid var(--line); vertical-align:top; }
+table.kv th { width:190px; color:var(--muted); font-weight:500; }
+table.audit td { font-size:12px; }
+tr.o-denied td { background:#fff6e5; } tr.o-failure td { background:var(--badbg); }
+.badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:12px; background:#e7ebf3; }
+.badge.owner { background:#dbe7ff; color:#1f4fd1; } .badge.editor { background:#fff1d6; color:#8a5a00; }
+.badge.viewer { background:#e5f5ea; color:#127a3a; } .badge.admin { background:#ffe0e0; color:#b4232a; }
+.flash { padding:10px 14px; border-radius:6px; margin-bottom:14px; font-size:14px; }
+.flash.error { background:var(--badbg); color:var(--bad); } .flash.info { background:#e8efff; color:#1f3d8f; }
+.flash.warning { background:#fff6e0; color:#7a5300; }
+.muted { color:var(--muted); } .small { font-size:12px; } .mono { font-family: ui-monospace, Consolas, monospace; word-break:break-all; }
+pre.code { background:#0f172a; color:#e2e8f0; padding:14px; border-radius:8px; }
+pre.big { font-size:20px; text-align:center; letter-spacing:1px; }

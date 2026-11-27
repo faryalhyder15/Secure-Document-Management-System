@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}My documents{% endblock %}
+{% block content %}
+<div class="row-between">
+  <h1>My documents</h1>
+  <a class="button" href="{{ url_for('documents.upload') }}">+ Upload</a>
+</div>
+
+<div class="card">
+  <h2>Owned by me</h2>
+  {% if owned %}
+  <table>
+    <tr><th>File name</th><th>Size</th><th>Version</th><th>Updated (UTC)</th></tr>
+    {% for d in owned %}
+    <tr><td><a href="{{ url_for('documents.detail', doc_id=d.id) }}">{{ d.filename }}</a></td>
+        <td>{{ d.size }} B</td><td>v{{ d.version }}</td><td>{{ d.updated_at[:19] }}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="muted">You have not uploaded any documents yet.</p>{% endif %}
+</div>
+
+<div class="card">
+  <h2>Shared with me</h2>
+  {% if shared %}
+  <table>
+    <tr><th>File name</th><th>Owner</th><th>My role</th><th>Expires</th></tr>
+    {% for d in shared %}
+    <tr><td><a href="{{ url_for('documents.detail', doc_id=d.id) }}">{{ d.filename }}</a></td>
+        <td>{{ d.owner }}</td><td><span class="badge {{ d.role }}">{{ d.role }}</span></td>
+        <td>{{ d.expires_at[:19] if d.expires_at else 'never' }}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="muted">Nothing has been shared with you.</p>{% endif %}
+</div>
+{% endblock %}
