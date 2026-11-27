@@ -1,0 +1,12 @@
+# SecureDMS - Python dependencies
+# Install with:  pip install -r requirements.txt
+#
+# Flask        -> web framework (routing, templates, request handling)
+# cryptography -> the ONLY crypto library we use (pyca/cryptography, backed by OpenSSL).
+#                 We never implement crypto algorithms ourselves (manual requirement).
+# pytest       -> runs the automated security test-suite (Part 3)
+# playwright   -> OPTIONAL, only used by scripts/take_screenshots.py to capture demo screenshots
+Flask>=3.0
+cryptography>=42.0
+pytest>=8.0
+playwright>=1.40   # optional (screenshots only). After install run:  playwright install chromium
