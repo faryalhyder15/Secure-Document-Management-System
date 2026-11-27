@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Log in</h1>
+  <form method="post" autocomplete="off">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label>Username <input name="username" required maxlength="32"></label>
+    <label>Password <input name="password" type="password" required maxlength="128"></label>
+    <button>Log in</button>
+  </form>
+  <p class="muted">No account? <a href="{{ url_for('auth.register') }}">Register</a> ·
+     Forgot password? <a href="{{ url_for('auth.recover') }}">Use recovery code</a></p>
+  <p class="muted small">Your password also unlocks your private encryption keys. They stay in server memory only
+     until you log out or your session times out (15 min idle).</p>
+</div>
+{% endblock %}

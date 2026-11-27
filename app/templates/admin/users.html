@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Users{% endblock %}
+{% block content %}
+<h1>User management</h1>
+<div class="card">
+  <p class="muted small">Administrators manage accounts but have <strong>no access to document contents</strong>
+     (least privilege). Disabling a user ends all of their sessions immediately.</p>
+  <table>
+    <tr><th>Username</th><th>System role</th><th>Status</th><th>Created (UTC)</th><th>Actions</th></tr>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.username }}</td>
+      <td><span class="badge {{ u.system_role }}">{{ u.system_role }}</span></td>
+      <td>{{ 'active' if u.is_active else 'DISABLED' }}{% if u.locked_until %} <span class="muted small">(locked until {{ u.locked_until[:19] }})</span>{% endif %}</td>
+      <td>{{ u.created_at[:19] }}</td>
+      <td>{% if u.id != current_user.id %}
+        <form method="post" action="{{ url_for('admin.set_active', user_id=u.id) }}" class="inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="active" value="{{ '0' if u.is_active else '1' }}">
+          <button class="small {{ 'danger' if u.is_active else '' }}">{{ 'Disable' if u.is_active else 'Enable' }}</button>
+        </form>
+        <form method="post" action="{{ url_for('admin.set_role', user_id=u.id) }}" class="inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="role" value="{{ 'user' if u.system_role == 'admin' else 'admin' }}">
+          <button class="small secondary">Make {{ 'user' if u.system_role == 'admin' else 'admin' }}</button>
+        </form>{% else %}<span class="muted small">(you)</span>{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
