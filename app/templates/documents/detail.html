@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ doc.filename }}{% endblock %}
+{% block content %}
+<h1>📄 {{ doc.filename }}</h1>
+
+{% if report %}
+<div class="card {{ 'ok-card' if report.intact else 'bad-card' }}">
+  <h2>{{ '✅ Integrity verified — document is unmodified' if report.intact else '❌ INTEGRITY FAILURE — document was modified outside the application' }}</h2>
+  <table>
+    <tr><td>Encrypted file present in storage</td><td>{{ '✔' if report.blob_present else '✘' }}</td></tr>
+    <tr><td>Ciphertext SHA-256 matches value recorded at upload</td><td>{{ '✔' if report.ciphertext_hash_ok else '✘' }}</td></tr>
+    <tr><td>AES-GCM authentication tag valid (decrypts with correct key + AAD)</td><td>{{ '✔' if report.aead_tag_ok else '✘' }}</td></tr>
+    <tr><td>Ed25519 signature valid (signed by <strong>{{ report.signed_by }}</strong>)</td><td>{{ '✔' if report.signature_ok else '✘' }}</td></tr>
+    {% if report.plaintext_sha256 %}<tr><td>SHA-256 of content</td><td class="mono">{{ report.plaintext_sha256 }}</td></tr>{% endif %}
+  </table>
+</div>
+{% endif %}
+
+<div class="card">
+  <table class="kv">
+    <tr><th>Owner</th><td>{{ doc.owner }}</td></tr>
+    <tr><th>Your role</th><td><span class="badge {{ doc.role }}">{{ doc.role }}</span></td></tr>
+    <tr><th>Size</th><td>{{ doc.size }} bytes</td></tr>
+    <tr><th>Version</th><td>v{{ doc.version }} (last signed by {{ doc.signed_by }})</td></tr>
+    <tr><th>Key generation</th><td>{{ doc.key_generation }} <span class="muted small">(increases each time access is revoked → document re-encrypted)</span></td></tr>
+    <tr><th>Document ID</th><td class="mono">{{ doc.id }}</td></tr>
+    <tr><th>Ciphertext SHA-256</th><td class="mono small">{{ doc.ciphertext_sha256 }}</td></tr>
+  </table>
+  <div class="actions">
+    <a class="button" href="{{ url_for('documents.download', doc_id=doc.id) }}">⬇ Download</a>
+    <form method="post" action="{{ url_for('documents.verify', doc_id=doc.id) }}" class="inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button class="secondary">🔍 Verify integrity</button>
+    </form>
+    {% if doc.role == 'owner' %}
+    <form method="post" action="{{ url_for('documents.delete', doc_id=doc.id) }}" class="inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button class="danger">🗑 Delete</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+{% if doc.role in ('owner', 'editor') %}
+<div class="card">
+  <h2>Upload new version</h2>
+  <form method="post" action="{{ url_for('documents.update', doc_id=doc.id) }}" enctype="multipart/form-data" class="row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="file" name="file" required>
+    <button>Upload v{{ doc.version + 1 }}</button>
+  </form>
+</div>
+{% endif %}
+
+{% if doc.role == 'owner' %}
+<div class="card">
+  <h2>Access control list</h2>
+  <table>
+    <tr><th>User</th><th>Role</th><th>Granted (UTC)</th><th>Expires</th><th></th></tr>
+    {% for a in doc.acl %}
+    <tr><td>{{ a.username }}</td><td><span class="badge {{ a.role }}">{{ a.role }}</span></td>
+        <td>{{ a.granted_at[:19] }}</td><td>{{ a.expires_at[:19] if a.expires_at else 'never' }}</td>
+        <td>{% if a.role != 'owner' %}
+          <form method="post" action="{{ url_for('documents.revoke', doc_id=doc.id) }}" class="inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="user_id" value="{{ a.user_id }}">
+            <button class="danger small">Revoke</button>
+          </form>{% endif %}</td></tr>
+    {% endfor %}
+  </table>
+  <h3>Share with another user</h3>
+  <form method="post" action="{{ url_for('documents.share', doc_id=doc.id) }}" class="row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input name="username" placeholder="username" required>
+    <select name="role"><option value="viewer">viewer (read only)</option><option value="editor">editor (read + new versions)</option></select>
+    <input name="expires_days" type="number" min="1" max="365" placeholder="expires in days (optional)">
+    <button>Share</button>
+  </form>
+  <p class="muted small">Sharing wraps this document's key with the recipient's RSA public key. No public links are ever created.</p>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>History</h2>
+  <table>
+    <tr><th>Version</th><th>Change</th><th>By</th><th>When (UTC)</th></tr>
+    {% for h in doc.history %}<tr><td>v{{ h.version }}</td><td>{{ h.change_type }}</td><td>{{ h.username }}</td><td>{{ h.created_at[:19] }}</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

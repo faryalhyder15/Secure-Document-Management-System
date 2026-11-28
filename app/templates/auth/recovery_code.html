@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Recovery code{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Save your recovery code</h1>
+  <p>This code is shown <strong>only once</strong>. It is the only way to recover your documents if you forget
+     your password. Store it offline (paper / password manager).</p>
+  <pre class="code big">{{ recovery_code }}</pre>
+  <p class="muted small">The server keeps only a copy of your private keys encrypted with this code; the code itself is never stored.</p>
+  <p><a class="button" href="{{ next_url }}">I have saved it — continue</a></p>
+</div>
+{% endblock %}

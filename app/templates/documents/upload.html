@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Upload{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Upload a document</h1>
+  <form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label>File (max 10 MB) <input type="file" name="file" required></label>
+    <button>Encrypt &amp; upload</button>
+  </form>
+  <ol class="muted small">
+    <li>A fresh random 256-bit key (DEK) is generated for this document.</li>
+    <li>The file and its name are encrypted with AES-256-GCM.</li>
+    <li>A SHA-256 hash of the file is signed with your Ed25519 key.</li>
+    <li>The DEK is wrapped with your RSA public key. Only ciphertext is written to disk.</li>
+  </ol>
+</div>
+{% endblock %}

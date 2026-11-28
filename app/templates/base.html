@@ -1,0 +1,48 @@
+{# =====================================================================
+   base.html - common layout. Every page extends this.
+   NOTE: Jinja2 auto-escapes all {{ variables }} -> protects against XSS.
+   No inline <script>/<style>: the Content-Security-Policy forbids them.
+   ===================================================================== #}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SecureDMS{% endblock %} · SecureDMS</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="{{ url_for('index') }}">🔒 SecureDMS</a>
+  <nav>
+    {% if current_user %}
+      <a href="{{ url_for('documents.dashboard') }}">My documents</a>
+      <a href="{{ url_for('documents.upload') }}">Upload</a>
+      {# Admin links are hidden for normal users, BUT the server also checks
+         the role on every admin route - hiding is not the protection. #}
+      {% if current_user.system_role == 'admin' %}
+        <a href="{{ url_for('admin.users_page') }}">Users</a>
+        <a href="{{ url_for('admin.audit_page') }}">Audit log</a>
+        <a href="{{ url_for('admin.integrity') }}">Integrity scan</a>
+      {% endif %}
+      <a href="{{ url_for('auth.account') }}">Account</a>
+      <span class="who">{{ current_user.username }}{% if current_user.system_role == 'admin' %} <span class="badge admin">admin</span>{% endif %}</span>
+      <form method="post" action="{{ url_for('auth.logout') }}" class="inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="link">Log out</button>
+      </form>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}">Log in</a>
+      <a href="{{ url_for('auth.register') }}">Register</a>
+    {% endif %}
+  </nav>
+</header>
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<footer>CS3002 Information Security · Secure Document Management System (prototype)</footer>
+</body>
+</html>

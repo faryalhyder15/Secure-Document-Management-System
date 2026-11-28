@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Create account</h1>
+  <form method="post" autocomplete="off">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label>Username <input name="username" required pattern="[A-Za-z0-9_.\-]{3,32}" maxlength="32"></label>
+    <label>Password (min 10 characters) <input name="password" type="password" required minlength="10" maxlength="128"></label>
+    <button>Register</button>
+  </form>
+  <p class="muted small">On registration you get an RSA-3072 key pair (encryption) and an Ed25519 key pair (signing).
+    Your private keys are encrypted with your password, so even the administrator cannot read your documents.</p>
+</div>
+{% endblock %}

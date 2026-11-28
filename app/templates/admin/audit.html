@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Audit log{% endblock %}
+{% block content %}
+<div class="row-between">
+  <h1>Audit trail</h1>
+  <form method="post" action="{{ url_for('admin.audit_verify') }}" class="inline">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button>🔐 Verify audit-log integrity</button>
+  </form>
+</div>
+
+<div class="card {{ 'bad-card' if suspicious else '' }}">
+  <h2>⚠ Suspicious activity (last 24 h)</h2>
+  {% if suspicious %}
+  <table>
+    <tr><th>User</th><th>Failed logins</th><th>Access denied</th><th>Integrity failures</th><th>Downloads</th><th>CSRF rejects</th></tr>
+    {% for s in suspicious %}<tr><td>{{ s.who or '(unknown)' }}</td><td>{{ s.failed_logins }}</td><td>{{ s.denied }}</td>
+      <td>{{ s.integrity_failures }}</td><td>{{ s.downloads }}</td><td>{{ s.csrf }}</td></tr>{% endfor %}
+  </table>
+  <p class="muted small">Rules: ≥3 failed logins, ≥3 access denials, any integrity failure, ≥20 downloads or any CSRF rejection.</p>
+  {% else %}<p class="muted">No user crossed the alert thresholds.</p>{% endif %}
+</div>
+
+<div class="card">
+  <form method="get" class="row">
+    <input name="actor_username" placeholder="user" value="{{ args.get('actor_username','') }}">
+    <input name="action" placeholder="action (e.g. document.)" value="{{ args.get('action','') }}">
+    <select name="outcome">
+      <option value="">any outcome</option>
+      {% for o in ('success','denied','failure') %}<option value="{{ o }}" {{ 'selected' if args.get('outcome')==o }}>{{ o }}</option>{% endfor %}
+    </select>
+    <input name="target_id" placeholder="target id" value="{{ args.get('target_id','') }}">
+    <button class="secondary">Filter</button>
+  </form>
+  <table class="audit">
+    <tr><th>#</th><th>Time (UTC)</th><th>User</th><th>Action</th><th>Outcome</th><th>Target</th><th>IP</th><th>Details</th></tr>
+    {% for r in rows %}
+    <tr class="o-{{ r.outcome }}"><td>{{ r.seq }}</td><td>{{ r.ts[:19] }}</td><td>{{ r.actor_username or '-' }}</td>
+      <td>{{ r.action }}</td><td>{{ r.outcome }}</td><td class="mono small">{{ (r.target_id or '')[:13] }}</td>
+      <td>{{ r.ip_address or '' }}</td><td class="small">{{ r.details }}</td></tr>
+    {% endfor %}
+  </table>
+  <p class="muted small">Each record is hash-chained to the previous one and HMAC-protected. The database rejects UPDATE/DELETE.</p>
+</div>
+{% endblock %}
